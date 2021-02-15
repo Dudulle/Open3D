@@ -21,6 +21,7 @@ function(open3d_show_and_abort_on_warning trgt)
             /wd4702        # unreachable code (many places in Open3D code)
             /wd4244        # implicit data type conversion (many places in Open3D code)
             /wd4245        # signed/unsigned mismatch (visualization, PoissonRecon, ...)
+            /wd4146        # unary minus operator applied to unsigned type (Eigen)
             )
 
     target_compile_options(${trgt} PRIVATE
