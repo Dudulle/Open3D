@@ -22,7 +22,7 @@ fi
 build_all
 
 echo "Building examples iteratively..."
-make VERBOSE=1 -j"$NPROC" build-examples-iteratively
+ninja -v -j"$NPROC" build-examples-iteratively
 echo
 
 df -h
@@ -45,4 +45,4 @@ test_cpp_example "${runExample:=ON}"
 echo
 
 echo "Test uninstalling Open3D..."
-make uninstall
+ninja uninstall

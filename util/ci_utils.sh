@@ -222,6 +222,7 @@ build_all() {
         -DBUILD_TENSORFLOW_OPS="$BUILD_TENSORFLOW_OPS"
         -DBUILD_PYTORCH_OPS="$BUILD_PYTORCH_OPS"
         -DBUILD_RPC_INTERFACE="$BUILD_RPC_INTERFACE"
+        -DBUILD_FILAMENT_FROM_SOURCE=ON
         -DCMAKE_INSTALL_PREFIX="$OPEN3D_INSTALL_DIR"
         -DPYTHON_EXECUTABLE="$(command -v python)"
         -DBUILD_UNIT_TESTS=ON
@@ -231,12 +232,12 @@ build_all() {
 
     echo
     echo Running cmake "${cmakeOptions[@]}" ..
-    cmake "${cmakeOptions[@]}" ..
+    cmake -GNinja "${cmakeOptions[@]}" ..
     echo
     echo "Build & install Open3D..."
-    make VERBOSE=1 -j"$NPROC"
-    make install -j"$NPROC"
-    make VERBOSE=1 install-pip-package -j"$NPROC"
+    ninja -v -j"$NPROC"
+    ninja install -j"$NPROC"
+    ninja -v install-pip-package -j"$NPROC"
     echo
 }
 
@@ -248,7 +249,7 @@ build_pip_conda_package() {
     #   build_pip_conda_package conda      # Build conda only
     echo "Building Open3D wheel"
 
-    BUILD_FILAMENT_FROM_SOURCE=OFF
+    BUILD_FILAMENT_FROM_SOURCE=ON
     set +u
     if [ -f "${OPEN3D_ML_ROOT}/set_open3d_ml_root.sh" ]; then
         echo "Open3D-ML available at ${OPEN3D_ML_ROOT}. Bundling Open3D-ML in wheel."
@@ -294,10 +295,10 @@ build_pip_conda_package() {
         "-DBUNDLE_OPEN3D_ML=$BUNDLE_OPEN3D_ML"
     )
     set -x # Echo commands on
-    cmake -DBUILD_CUDA_MODULE=OFF "${cmakeOptions[@]}" ..
+    cmake -GNinja -DBUILD_CUDA_MODULE=OFF "${cmakeOptions[@]}" ..
     set +x # Echo commands off
     echo
-    make VERBOSE=1 -j"$NPROC" pybind open3d_tf_ops open3d_torch_ops
+    ninja -v -j"$NPROC" pybind open3d_tf_ops open3d_torch_ops
 
     if [ "$BUILD_CUDA_MODULE" == ON ]; then
         echo
@@ -310,7 +311,7 @@ build_pip_conda_package() {
         echo Removing CPU compiled files / folders: "${rebuild_list[@]}"
         rm -r "${rebuild_list[@]}" || true
         set -x # Echo commands on
-        cmake -DBUILD_CUDA_MODULE=ON \
+        cmake -GNinja -DBUILD_CUDA_MODULE=ON \
             -DBUILD_COMMON_CUDA_ARCHS="${BUILD_COMMON_CUDA_ARCHS}" "${cmakeOptions[@]}" ..
         set +x # Echo commands off
     fi
@@ -319,13 +320,13 @@ build_pip_conda_package() {
     options="$(echo "$@" | tr ' ' '|')"
     if [[ "pip" =~ ^($options)$ ]]; then
         echo "Packaging Open3D pip package..."
-        make VERBOSE=1 -j"$NPROC" pip-package
+        ninja -v -j"$NPROC" pip-package
     elif [[ "conda" =~ ^($options)$ ]]; then
         echo "Packaging Open3D conda package..."
-        make VERBOSE=1 -j"$NPROC" conda-package
+        ninja -v -j"$NPROC" conda-package
     else
         echo "Packaging Open3D pip and conda package..."
-        make VERBOSE=1 -j"$NPROC" pip-conda-package
+        ninja -v -j"$NPROC" pip-conda-package
     fi
     cd .. # PWD=Open3D
 }
@@ -413,7 +414,7 @@ test_cpp_example() {
     cd open3d-cmake-find-package
     mkdir build
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=${OPEN3D_INSTALL_DIR} ..
+    cmake -GNinja -DCMAKE_INSTALL_PREFIX=${OPEN3D_INSTALL_DIR} ..
     make -j"$NPROC" VERBOSE=1
     runExample="$1"
     if [ "$runExample" == ON ]; then

@@ -101,6 +101,7 @@ WORKDIR /root/Open3D
 RUN mkdir build \
  && cd build \
  && cmake \
+    -GNinja \
     -DUSE_BLAS=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=ON \
@@ -114,8 +115,8 @@ RUN mkdir build \
     -DCMAKE_INSTALL_PREFIX=~/open3d_install \
     -DPYTHON_EXECUTABLE="$(which python3)" \
     .. \
- && make -j$(nproc) \
- && make install-pip-package -j$(nproc)
+ && ninja -j$(nproc) \
+ && ninja install-pip-package -j$(nproc)
 
 # Compress ccache folder, move to / directory (optional)
 RUN ccache -s \
