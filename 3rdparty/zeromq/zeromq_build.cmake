@@ -8,8 +8,12 @@ include(FetchContent)
 if(WIN32)
     set(WIN_CMAKE_ARGS "-DCMAKE_CXX_FLAGS_DEBUG=$<IF:$<BOOL:${STATIC_WINDOWS_RUNTIME}>,/MTd,/MDd> /Zi /Ob0 /Od /RTC1"
                        "-DCMAKE_CXX_FLAGS_RELEASE=$<IF:$<BOOL:${STATIC_WINDOWS_RUNTIME}>,/MT,/MD> /O2 /Ob2 /DNDEBUG"
+                       "-DCMAKE_CXX_FLAGS_RELWITHDEBINFO=$<IF:$<BOOL:${STATIC_WINDOWS_RUNTIME}>,/MT,/MD> /Zi /O2 /Ob1 /DNDEBUG"
+                       "-DCMAKE_CXX_FLAGS_MINSIZEREL=$<IF:$<BOOL:${STATIC_WINDOWS_RUNTIME}>,/MT,/MD> /O1 /Ob1 /DNDEBUG"
                        "-DCMAKE_C_FLAGS_DEBUG=$<IF:$<BOOL:${STATIC_WINDOWS_RUNTIME}>,/MTd,/MDd> /Zi /Ob0 /Od /RTC1"
                        "-DCMAKE_C_FLAGS_RELEASE=$<IF:$<BOOL:${STATIC_WINDOWS_RUNTIME}>,/MT,/MD> /O2 /Ob2 /DNDEBUG"
+                       "-DCMAKE_C_FLAGS_RELWITHDEBINFO=$<IF:$<BOOL:${STATIC_WINDOWS_RUNTIME}>,/MT,/MD> /Zi /O2 /Ob1 /DNDEBUG"
+                       "-DCMAKE_C_FLAGS_MINSIZEREL=$<IF:$<BOOL:${STATIC_WINDOWS_RUNTIME}>,/MT,/MD> /O1 /Ob1 /DNDEBUG"
                        )
     set(lib_name libzmq)
     if(CMAKE_VS_PLATFORM_TOOLSET)
