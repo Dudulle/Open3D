@@ -34,14 +34,12 @@ jobs:
       matrix:
         SHARED: [ON, OFF]
         STATIC_RUNTIME: [ON, OFF]
-        BUILD_CUDA: [ON, OFF]
-        CONFIG: [Release, Debug]
+        BUILD_CUDA: [ON]
+        CONFIG: [Release, Debug, RelWithDebInfo, MinSizeRel]
+        CUDA_VERSION: [10.1.243, 10.2.89, 11.0.3, 11.1.1, 12.2.2]
         exclude:
           - SHARED: ON
             STATIC_RUNTIME: ON
-        include:
-          - BUILD_CUDA: ON
-            CUDA_VERSION: 11.0.3
 
     steps:
       - name: Cancel outdated
